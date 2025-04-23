@@ -77,3 +77,8 @@ Você verá uma saída semelhante a:
 URL Pública: <COPIE_ESSA_URL>
 Servidor XML-RPC em execução...
 ```
+
+---
+
+Com essa url, é possivel conectar com o servidor em qualquer rede e realizar a chamada dos métodos.
+Para saber como testar a geração de uma consulta sem ser em um projeto Django acesse [esse](https://github.com/luiz-bcardoso/UFNCC-TrabalhoFinalGraduacao/blob/main/GeradorConsulta_Client/Conecta.py) repositório para obter a classe de conexão.
