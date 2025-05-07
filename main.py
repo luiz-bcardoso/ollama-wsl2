@@ -15,7 +15,7 @@ import time
 esquema_banco = {}
 
 # Define a função que atualiza o contexto usando JSON
-def atualizar_contexto(json_str):
+def atualiza_contexto(json_str):
     global esquema_banco
     try:
         print('------ ATUALIZANDO CONTEXTO ------')
@@ -32,7 +32,7 @@ def atualizar_contexto(json_str):
         print('---- FIM ATUALIZAÇÃO CONTEXTO ----')
     
 # Define a função que gera consultas SQL
-def gerar_resposta(prompt_usuario: str) -> str:
+def gera_resposta(prompt_usuario: str) -> str:
     print('------ NOVA REQUISIÇÃO DO USUÁRIO ------')
     print('PERGUNTA > ', prompt_usuario)
     try:
@@ -44,7 +44,7 @@ def gerar_resposta(prompt_usuario: str) -> str:
         print('RESPOSTA > ', llm_response)
 
         # Extract SQL query
-        sql_query = extrair_consulta_sql(llm_response)
+        sql_query = extrai_consulta_sql(llm_response)
         print('QUERYSQL > ', sql_query)
 
         return sql_query
@@ -55,12 +55,7 @@ def gerar_resposta(prompt_usuario: str) -> str:
     finally:
         print('------- FIM REQUISIÇÃO DO USUÁRIO ------')
 
-def extrair_consulta_sql(resposta_llm: str) -> str:
-    """
-    Extrai e retorna uma consulta SQL formatada a partir da resposta do LLM,
-    que deve estar entre crases triplas.
-    Retorna uma mensagem de erro se nenhuma consulta SQL válida for encontrada.
-    """
+def extrai_consulta_sql(resposta_llm: str) -> str:
     try:
         # Padrão regex para encontrar conteúdo entre ```sql``` ou apenas ```
         padrao = r'```(?:sql)?\s*(.*?)\s*```'
@@ -106,6 +101,7 @@ prompt_template_sql = PromptTemplate.from_template(
     """
 )
 
+# Inicia o ollama serve em uma thread separada.
 def run_ollama_serve():
   subprocess.Popen(["ollama", "serve"])
 
@@ -116,7 +112,7 @@ time.sleep(5)
 # Tenta recuperar o contexto para utlizar no RAG via arquivo JSON.
 try:
     with open("esquema_banco.json", "r") as file:
-      esquema_banco = atualizar_contexto(json.load(file))
+      esquema_banco = atualiza_contexto(json.load(file))
 except FileNotFoundError:
     print("Arquivo 'esquema_banco.json' não encontrado.")
 
@@ -140,8 +136,8 @@ server = SimpleXMLRPCServer(
 )
 
 # Registra somente as funções para gerar consultas e atualizar contexto via RPC.
-server.register_function(atualizar_contexto, "atualizar_contexto")
-server.register_function(gerar_resposta, "gerar_resposta")
+server.register_function(atualiza_contexto, "atualiza_contexto")
+server.register_function(gera_resposta, "gera_resposta")
 
 # Cria uma URL pública pelo ngrok para acessar o serviço fora do Google Colab.
 try:
